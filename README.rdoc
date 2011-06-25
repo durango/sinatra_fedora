@@ -1,0 +1,13 @@
+= Sinatra::Fedora
+
+A Sinatra (http://github.com/sinatra/sinatra) class that provides the ability to automatically map controllers into the URL. Acts like a very light "wrapper" around Sinatra::Base.
+
+tl;dr A classier way for Sinatra
+
+== Usage
+
+Just browse through the source to see an incredibly easy layout.
+
+== Contributors
+
+* Jonathan Stott (https://github.com/namelessjon) <-- Pretty much wrote the entire thing.
