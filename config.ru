@@ -1,2 +1,2 @@
-require 'fedora'
+require 'app'
 run Fedora.map
