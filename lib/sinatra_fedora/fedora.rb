@@ -50,8 +50,10 @@ module Sinatra
       layout_engine   = options.delete(:layout_engine) || engine
       scope           = options.delete(:scope)         || self
 
+			# Fedora views
 			if data != :layout and options[:views_directory].nil?
-				data = "#{scope.class.name.downcase}/#{data.to_s}".to_sym
+				look_in = (scope.class.name.downcase || scope.class.views_from) if scope.class.views_from.nil?
+				data = "#{look_in}/#{data.to_s}".to_sym
 			end
 
       # compile and render template
@@ -85,8 +87,12 @@ class Fedora < Sinatra::Base
 
   def self.map
     Hash[descendents.map { |d| [d.namespace, d] }]
-    
   end
+
+	def self.views_from(value=nil)
+		return (@views_from || nil) if value.nil?
+		@views_from = value
+	end
 
   def self.namespace(value=nil)
     return (@namespace || "/#{name}") if value.nil?
