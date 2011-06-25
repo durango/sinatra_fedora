@@ -1,13 +1,23 @@
 = Sinatra::Fedora
 
-A Sinatra (http://github.com/sinatra/sinatra) class that provides the ability to automatically map controllers into the URL. Acts like a very light "wrapper" around Sinatra::Base.
+A Sinatra (http://github.com/sinatra/sinatra) class that provides the ability to automatically map controllers into the URL. Acts like a very light "wrapper" around Sinatra::Base. Essentially, a watered-down (in a good way) version of Padrino.
 
 tl;dr A classier way for Sinatra
 
 == Usage
 
-Just browse through the source to see an incredibly easy layout.
+=== Typical Controller Class
+    class Home < Fedora
+      namespace '/' # Tells Fedora to set these actions to the root of the URL
+      views_from '/' # Grab views from :views/
+      
+      get '/' do
+      	haml :index
+      end
+    end
+
+If your controller doesn't contain "views_from" Fedora will simply look in :views/<controller name>/ ("namespace" acts in the same exact way). Be sure to check out the app.rb and config.ru source.
 
 == Contributors
 
-* Jonathan Stott (https://github.com/namelessjon) <-- Pretty much wrote the entire thing.
+* Jonathan Stott (https://github.com/namelessjon)
