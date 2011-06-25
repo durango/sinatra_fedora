@@ -9,6 +9,6 @@ class Auth < Fedora
 	end
 
 	get '/list' do
-		"List your users here"
+		haml :list
 	end
 end
