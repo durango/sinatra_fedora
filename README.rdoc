@@ -4,11 +4,14 @@ A Sinatra (http://github.com/sinatra/sinatra) class that provides the ability to
 
 tl;dr A classier way for Sinatra
 
+== Installation
+    gem install sinatra_fedora
+
 == Usage
 
 === Typical Controller Class
     class Home < Fedora
-      namespace '/' # Tells Fedora to set these actions to the root of the URL
+      url '/' # Tells Fedora to set these actions to the root of the URL
       views_from '/' # Grab views from :views/
       
       get '/' do
@@ -16,7 +19,7 @@ tl;dr A classier way for Sinatra
       end
     end
 
-If your controller doesn't contain "views_from" Fedora will simply look in :views/<controller name>/ ("namespace" acts in the same exact way). Be sure to check out the app.rb and config.ru source.
+If your controller doesn't contain "views_from" Fedora will simply look in :views/<controller name>/ ("url" acts in the same exact way). Be sure to check out the app.rb and config.ru source. You can replace "url" method with "namespace" as well.
 
 == Contributors
 

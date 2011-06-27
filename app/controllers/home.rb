@@ -1,14 +1,24 @@
 class Home < Fedora
-	# Set as the root URL otherwise
-	# the url will default to /home
-	# (class name lowercased)
-	namespace '/'
+  # Set as the root URL otherwise
+  # the url will default to /home
+  # (class name lowercased)
+  url '/'
 
-	get '/' do
-		"Hello world!"
-	end
-	
-	get '/welcome' do
-		"Try me too!"
-	end
+  # views_from can tell Fedora which
+  # folder in :views you want to use
+  # for all actions in this class
+  # (:views_directory overrides this)
+  views_from '/'
+
+  get '/' do
+    haml :index
+  end
+
+  get '/welcome/?' do
+    "Try me too!"
+  end
+
+  get '/list/?' do
+    haml :list
+  end
 end
