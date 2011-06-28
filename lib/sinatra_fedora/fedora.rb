@@ -32,6 +32,12 @@
 require 'sinatra/base'
 
 module Sinatra
+  module HTMLEscapeHelper
+    def h(text)
+      Rack::Utils.escape_html(text)
+    end
+  end
+
   module Templates
     def render(engine, data, options={}, locals={}, &block)
       # merge app-level options
@@ -73,9 +79,13 @@ module Sinatra
       output
     end
   end
+
+  helpers HTMLEscapeHelper
 end
 
 class Fedora < Sinatra::Base
+  helpers Sinatra::HTMLEscapeHelper
+
   def self.inherited(klass)
     super
     descendents.push(klass)

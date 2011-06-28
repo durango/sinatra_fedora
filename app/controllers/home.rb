@@ -15,7 +15,7 @@ class Home < Fedora
   end
 
   get '/welcome/?' do
-    "Try me too!"
+    h "Try me too! <This is escaped!>"
   end
 
   get '/list/?' do
