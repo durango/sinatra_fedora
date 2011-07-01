@@ -31,11 +31,66 @@
 
 require 'sinatra/base'
 
+# Memoizable code for caching link_to objects
+# see http://snippets.dzone.com/posts/show/5300
+module Memoizable
+  # Store for cached values.
+  CACHE = Hash.new{|h,k| h[k] = Hash.new{|h,k| h[k] = {}}} # 3 level hash; CACHE[:foo][:bar][:yelp]
+  
+  # Memoize the given method(s).
+  def memoize(*names)
+    names.each do |name|
+      unmemoized = "__unmemoized_#{name}"
+      
+      class_eval %Q{
+        alias   :#{unmemoized} :#{name}
+        private :#{unmemoized}
+        def #{name}(*args)
+          cache = CACHE[self][#{name.inspect}]
+          cache.has_key?(args) ? cache[args] : (cache[args] = send(:#{unmemoized}, *args))
+        end
+      }
+    end
+  end
+  
+  # Flush cached return values.
+  def flush_memos
+    CACHE.clear
+  end
+  module_function :flush_memos
+end
+
 module Sinatra
+  # simple way to escape HTML (method 'h')
   module HTMLEscapeHelper
     def h(text)
       Rack::Utils.escape_html(text)
     end
+  end
+
+  # link_to helper
+  module LinkHelper
+    extend Memoizable
+
+    def get_namespace(klass)
+      begin
+        Object.const_get(klass).namespace
+      rescue
+        klass
+      end
+    end
+
+    def link_to(link, disable=false)
+      if disable
+        return link
+      end
+
+      _class = link.gsub(/^\/([\w\d]+)/, '\1').split('/')
+      _name = get_namespace _class[0].capitalize
+      _name + _class.join('/').gsub(_class[0], '')
+    end
+    # cache the namespace to save time
+    memoize :get_namespace
   end
 
   module Templates
@@ -79,12 +134,11 @@ module Sinatra
       output
     end
   end
-
-  helpers HTMLEscapeHelper
 end
 
 class Fedora < Sinatra::Base
   helpers Sinatra::HTMLEscapeHelper
+  helpers Sinatra::LinkHelper
 
   def self.inherited(klass)
     super
@@ -92,7 +146,7 @@ class Fedora < Sinatra::Base
   end
 
   def self.descendents
-     @descendents ||= []
+    @descendents ||= []
   end
 
   def self.map

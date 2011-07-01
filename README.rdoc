@@ -7,7 +7,63 @@ tl;dr A classier way for Sinatra
 == Installation
     gem install sinatra_fedora
 
+== The Fedora Binary
+The Fedora binary offers basic functionality as for now.
+
+=== Creating a new project
+Creating a project within the directory
+    fedora sing [hat]
+
+Creating a project within a new directory
+    fedora new <project_name> [hat]
+
+=== What are hats?
+Fedora offers a way to create templates for your projects. Think of each hat as a blueprint for a project. Sometimes you just need Sinatra and other times you need Sinatra/DataMapper/Warden/etc. You can manage hats by using the "hatrack" command in fedora.
+
+To add a hat...
+    fedora hatrack add ~/path/to/directory <hat name>
+
+To remove a hat (you can replace +rm+ with +rem+, +remove+, +del+, or +delete+)...
+    fedora hatrack rm <hat name>
+
+=== Official Hats
+[official]
+  The default hat, sets up a simple Sinatra application
+
+[datamapper]
+  Same as default hat with DataMapper (you must apply which adapter you need) added
+
+[concert]
+  Sets up DataMapper (same rules apply for [datamapper]) and {sinatra_warden}[https://github.com/jsmestad/sinatra_warden]. It does not setup CSRF, etc.
+
 == Usage
+=== Helpers
+To escape HTML simply type "h" for example:
+    h "<This is escaped!>"
+
+Fedora offers an incredibly way to link/route towards pages. Let's say your controller is called "Auth" and every link goes to '/auth', '/auth/list', '/auth/dashboard', etc. You would simply type (for example):
+    link_to('/auth/list')
+
+Your boss goes up to you and says, "I want all of the membership links to point towards user not auth." The only thing you have to change is the controller's url/namespace option.
+    class Auth < Fedora
+      url '/user'
+      ...code here...
+    end
+
+And Fedora will translate all of your '/auth' links to '/user' automatically. The namespace translation only happens once and then caches for the rest of the page so having multiple '/auth/*' links wont cause much overhead.
+
+=== Main app.rb file
+    require 'sinatra_fedora'
+    
+    class Fedora
+      enable :sessions
+      
+      set :views, File.dirname(__FILE__) + '/app/views'
+      set :public, File.dirname(__FILE__) + '/public'
+      
+      Dir.glob('app/models/*.rb').each { |r| require File.expand_path(File.join(File.dirname(__FILE__), r)) }
+      Dir.glob('app/controllers/*.rb').each { |r| require File.expand_path(File.join(File.dirname(__FILE__), r)) }
+    end
 
 === Typical Controller Class
     class Home < Fedora
@@ -20,6 +76,14 @@ tl;dr A classier way for Sinatra
     end
 
 If your controller doesn't contain "views_from" Fedora will simply look in :views/<controller name>/ ("url" acts in the same exact way). Be sure to check out the app.rb and config.ru source. You can replace "url" method with "namespace" as well.
+
+== Goals
+* Make development faster with larger projects using Sinatra
+* Keep it as slim as possible. For a fully featured Sinatra framework use Padrino.
+* Keep it classy.
+
+== Feedback
+I'm always looking for ways to improve Fedora as well as my other projects. Shoot me a message on here fork the project over!
 
 == Contributors
 

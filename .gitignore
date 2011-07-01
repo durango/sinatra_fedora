@@ -20,5 +20,6 @@ pkg
 bin
 vendor
 .bundle
+*.gem
 
 ## PROJECT::SPECIFIC
