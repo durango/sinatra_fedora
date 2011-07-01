@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'fileutils'
+
+options = {}
+
+opt_parser = OptionParser.new do |opt|
+  opt.banner = "Usage: fedora COMMAND [OPTIONS]"
+  opt.separator ""
+  opt.separator "Commands"
+  opt.separator "     new <project name> [hat]: Creates a new Fedora project"
+  opt.separator "       e.g. fedora new project_name"
+  opt.separator "       hats are blueprints for your projects type 'fedora hatrack' for more info."
+  opt.separator ""
+  opt.separator "     sing [hat]: Creates a new Fedora project in the directory that you're in."
+  opt.separator ""
+end
+
+opt_parser.parse!
+
+case ARGV[0]
+when "new", "sing"
+  if ARGV[1].nil? and ARGV[0] != "sing"
+    puts opt_parser
+  else
+    ARGV[2] ||= "official"
+
+    if File.directory? ARGV[2]
+      hatrack_dir = ARGV[2]
+    else
+      ARGV[2].gsub(/[^\w\d]/, '')
+      hatrack_dir = File.expand_path(File.join(File.dirname(__FILE__), '../lib/hatrack/' + ARGV[2]))
+    end
+
+    if !File.directory? hatrack_dir
+      puts "Hatrack '" + ARGV[2] + "' doesn't exist"
+      exit(1)
+    end
+
+    if ARGV[0] == "sing"
+      FileUtils.cp_r hatrack_dir + '/.', Dir.pwd
+      ARGV[1] = ''
+    else
+      ARGV[1].gsub(/[^\w\d]/, '').downcase
+      current_dir = File.expand_path(File.join(File.dirname(__FILE__)))
+
+      if File.exists? current_dir + "/#{ARGV[1]}"
+        puts "Project #{ARGV[1]} already exist in this directory, try choosing a different name."
+        exit(1)
+      end
+
+      FileUtils.mkdir ARGV[1]
+      FileUtils.cp_r hatrack_dir + '/.', ARGV[1]
+    end
+
+    puts "Sinatra found his fedora in " + Dir.pwd + "/#{ARGV[1]}"
+    puts "Head on over there to start developing"
+  end
+when "hatrack"
+  case ARGV[1]
+  when "rm", "rem", "remove", "del", "delete"
+    ARGV[2].gsub(/[^\w\d]/, '')
+    hatrack_dir = File.expand_path(File.join(File.dirname(__FILE__), '../lib/hatrack/' + ARGV[2]))
+    if ARGV[2] == "official"
+      puts "You can't delete the official Fedora hat."
+    elsif File.directory? hatrack_dir
+      FileUtils.rm_rf hatrack_dir
+      puts ARGV[2] + " hat has been removed."
+    else
+      puts ARGV[2] + " is not a valid hat."
+    end
+  when "add"
+    if ARGV[3].nil?
+      puts "You must name this hat something."
+      exit(1)
+    end
+
+    ARGV[3].gsub(/[^\w\d]/, '')
+    if File.directory? ARGV[2]
+      FileUtils.mkdir File.expand_path(File.join(File.dirname(__FILE__), '../lib/hatrack/' + ARGV[3]))
+      FileUtils.cp_r ARGV[2] + '/.', File.expand_path(File.join(File.dirname(__FILE__), '../lib/hatrack/' + ARGV[3]))
+      puts ARGV[3] + " hat has been made added to the hatrack."
+    else
+      puts "We couldn't find the hat: " + ARGV[2]
+      exit(1)
+    end
+  else
+    opt_parser2 = OptionParser.new do |opt|
+      opt.banner = "Usage: fedora hatrack COMMAND HAT"
+      opt.separator ""
+      opt.separator "Commands"
+      opt.separator "     rm, rem, remove, del, delete: Removes a hat from the hatrack"
+      opt.separator "       e.g. fedora hatrack rm official"
+      opt.separator ""
+      opt.separator "     add [directory to hat] [hat name]: Adds a hat to the hatrack."
+      opt.separator "       e.g. fedora hatrack add ~/custom_hats/example example"
+      opt.separator ""
+    end
+    puts opt_parser2
+  end
+else
+  puts opt_parser
+end
