@@ -29,4 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
 =end
 
-require File.join(File.dirname(__FILE__), 'sinatra_fedora', 'fedora')
+require 'sinatra/base'
+require 'require_all'
+
+require_rel './sinatra_fedora/*.rb'
