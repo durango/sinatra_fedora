@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = 'sinatra_fedora'
-  s.version     = '1.1'
+  s.version     = '1.2'
   s.summary     = "An even classier way to use Sinatra."
   s.description = "Converts class names intro controllers and automatically maps them. Same thing with views and both, views and controllers, can be configured to your liking. It combines the best of both Padrino and Sinatra."
   s.authors     = ["Daniel Durante"]
